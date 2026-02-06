@@ -1,0 +1,98 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://0nork.com/schemas/connection.json",
+  "title": ".0n Connection",
+  "description": "Service connection configuration for the .0n standard",
+  "type": "object",
+  "required": ["$0n", "service", "auth"],
+  "properties": {
+    "$0n": {
+      "type": "object",
+      "required": ["type", "version"],
+      "properties": {
+        "type": {
+          "const": "connection"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$"
+        },
+        "created": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 500
+        }
+      }
+    },
+    "service": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Service identifier (e.g., 'stripe', 'slack', 'openai')"
+    },
+    "environment": {
+      "type": "string",
+      "enum": ["production", "sandbox", "development"],
+      "default": "production"
+    },
+    "auth": {
+      "type": "object",
+      "required": ["type", "credentials"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["api_key", "oauth2", "basic", "bearer", "custom"]
+        },
+        "credentials": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
+    "options": {
+      "type": "object",
+      "properties": {
+        "base_url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "timeout_ms": {
+          "type": "integer",
+          "minimum": 1000,
+          "maximum": 300000,
+          "default": 30000
+        },
+        "retry_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10,
+          "default": 3
+        },
+        "rate_limit": {
+          "type": "object",
+          "properties": {
+            "requests_per_second": {
+              "type": "number",
+              "minimum": 0.1
+            }
+          }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}

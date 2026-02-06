@@ -1,0 +1,56 @@
+{
+  "name": "0n-spec",
+  "version": "1.0.0",
+  "description": "The .0n Standard - Universal configuration format for AI orchestration",
+  "main": "index.js",
+  "bin": {
+    "0n": "./cli.js"
+  },
+  "scripts": {
+    "test": "node cli.js test"
+  },
+  "keywords": [
+    "0n",
+    "0nmcp",
+    "0nork",
+    "mcp",
+    "ai",
+    "orchestration",
+    "configuration",
+    "standard",
+    "specification",
+    "automation"
+  ],
+  "author": {
+    "name": "0nORK",
+    "url": "https://github.com/0nork"
+  },
+  "license": "CC-BY-4.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/0nork/0n-spec.git"
+  },
+  "bugs": {
+    "url": "https://github.com/0nork/0n-spec/issues"
+  },
+  "homepage": "https://github.com/0nork/0n-spec",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/0nork"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "index.js",
+    "cli.js",
+    "schemas",
+    "examples",
+    "SPEC.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

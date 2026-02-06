@@ -1,0 +1,108 @@
+{
+  "$0n": {
+    "type": "workflow",
+    "version": "1.0.0",
+    "created": "2026-02-06T12:00:00Z",
+    "name": "Invoice and Notify",
+    "description": "Create a Stripe invoice and notify the team on Slack"
+  },
+  "trigger": {
+    "type": "manual"
+  },
+  "inputs": {
+    "customer_email": {
+      "type": "string",
+      "required": true,
+      "description": "Customer email address"
+    },
+    "amount": {
+      "type": "number",
+      "required": true,
+      "description": "Invoice amount in dollars"
+    },
+    "description": {
+      "type": "string",
+      "required": false,
+      "default": "Services rendered",
+      "description": "Invoice line item description"
+    }
+  },
+  "steps": [
+    {
+      "id": "find_customer",
+      "name": "Find or Create Customer",
+      "service": "stripe",
+      "action": "customers.search",
+      "params": {
+        "query": "email:'{{inputs.customer_email}}'"
+      },
+      "output": "customer_search"
+    },
+    {
+      "id": "create_invoice",
+      "name": "Create Invoice",
+      "service": "stripe",
+      "action": "invoices.create",
+      "params": {
+        "customer": "{{find_customer.customer_search.data[0].id}}",
+        "collection_method": "send_invoice",
+        "days_until_due": 30,
+        "auto_advance": true
+      },
+      "output": "invoice",
+      "conditions": [
+        {
+          "if": "{{find_customer.customer_search.data.length > 0}}",
+          "else": "error:Customer not found"
+        }
+      ]
+    },
+    {
+      "id": "add_line_item",
+      "name": "Add Line Item",
+      "service": "stripe",
+      "action": "invoiceItems.create",
+      "params": {
+        "invoice": "{{create_invoice.invoice.id}}",
+        "amount": "{{inputs.amount * 100}}",
+        "currency": "usd",
+        "description": "{{inputs.description}}"
+      },
+      "output": "line_item"
+    },
+    {
+      "id": "send_invoice",
+      "name": "Send Invoice",
+      "service": "stripe",
+      "action": "invoices.sendInvoice",
+      "params": {
+        "invoice": "{{create_invoice.invoice.id}}"
+      },
+      "output": "sent_invoice"
+    },
+    {
+      "id": "notify_team",
+      "name": "Notify Team on Slack",
+      "service": "slack",
+      "action": "chat.postMessage",
+      "params": {
+        "channel": "#sales",
+        "text": "New invoice sent!\n\nCustomer: {{inputs.customer_email}}\nAmount: ${{inputs.amount}}\nInvoice: {{send_invoice.sent_invoice.hosted_invoice_url}}"
+      },
+      "output": "slack_message"
+    }
+  ],
+  "outputs": {
+    "invoice_id": "{{create_invoice.invoice.id}}",
+    "invoice_number": "{{create_invoice.invoice.number}}",
+    "invoice_url": "{{send_invoice.sent_invoice.hosted_invoice_url}}",
+    "slack_ts": "{{notify_team.slack_message.ts}}"
+  },
+  "error_handling": {
+    "on_error": "stop",
+    "notify_on_error": {
+      "service": "slack",
+      "channel": "#alerts"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "$0n": {
+    "type": "config",
+    "version": "1.0.0",
+    "created": "2026-02-06T12:00:00Z"
+  },
+  "settings": {
+    "ai_provider": "anthropic",
+    "ai_model": "claude-sonnet-4-20250514",
+    "fallback_mode": "keyword",
+    "history_enabled": true,
+    "history_retention_days": 30,
+    "cache_enabled": true,
+    "cache_ttl_seconds": 3600,
+    "encryption_enabled": false
+  },
+  "default_services": [
+    "stripe",
+    "slack",
+    "openai"
+  ],
+  "plugins": []
+}

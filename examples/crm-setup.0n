@@ -1,0 +1,136 @@
+{
+  "$0n": {
+    "type": "snapshot",
+    "version": "1.0.0",
+    "created": "2026-02-06T12:00:00Z",
+    "name": "Sales CRM Setup",
+    "description": "Complete CRM configuration with sales pipeline, tags, custom values, and workflows"
+  },
+  "target": {
+    "service": "crm",
+    "location_id": "{{env.CRM_LOCATION_ID}}"
+  },
+  "components": {
+    "pipelines": [
+      {
+        "name": "Sales Pipeline",
+        "stages": [
+          { "name": "001. New Lead", "position": 1 },
+          { "name": "002. Contacted", "position": 2 },
+          { "name": "003. Qualified", "position": 3 },
+          { "name": "004. Proposal Sent", "position": 4 },
+          { "name": "005. Negotiation", "position": 5 },
+          { "name": "006. Closed Won", "position": 6 },
+          { "name": "007. Closed Lost", "position": 7 }
+        ]
+      }
+    ],
+    "tags": [
+      { "name": "New Lead", "color": "#3B82F6" },
+      { "name": "Hot Lead", "color": "#EF4444" },
+      { "name": "Warm Lead", "color": "#F59E0B" },
+      { "name": "Cold Lead", "color": "#6B7280" },
+      { "name": "VIP", "color": "#8B5CF6" },
+      { "name": "Referral", "color": "#10B981" },
+      { "name": "Do Not Contact", "color": "#1F2937" },
+      { "name": "Appointment Set", "color": "#06B6D4" },
+      { "name": "No Show", "color": "#DC2626" },
+      { "name": "Closed", "color": "#22C55E" }
+    ],
+    "custom_fields": [
+      {
+        "key": "lead_source",
+        "name": "Lead Source",
+        "type": "dropdown",
+        "options": ["Website", "Referral", "Facebook Ads", "Google Ads", "Cold Outreach", "Event"]
+      },
+      {
+        "key": "budget",
+        "name": "Budget Range",
+        "type": "dropdown",
+        "options": ["Under $1k", "$1k-$5k", "$5k-$10k", "$10k-$25k", "$25k+"]
+      },
+      {
+        "key": "decision_timeline",
+        "name": "Decision Timeline",
+        "type": "dropdown",
+        "options": ["Immediately", "1-2 weeks", "1 month", "3+ months", "Just researching"]
+      }
+    ],
+    "custom_values": {
+      "company_name": "{{env.COMPANY_NAME}}",
+      "support_email": "{{env.SUPPORT_EMAIL}}",
+      "calendar_link": "{{env.CALENDAR_LINK}}",
+      "welcome_sms": "Hey {{contact.first_name}}! Thanks for reaching out to {{custom_values.company_name}}. We'll be in touch shortly!",
+      "follow_up_sms": "Hi {{contact.first_name}}, just following up on our conversation. Ready to take the next step? Book a call: {{custom_values.calendar_link}}"
+    },
+    "workflows": [
+      {
+        "id": "new_lead_welcome",
+        "name": "New Lead - Welcome Sequence",
+        "trigger": {
+          "type": "tag_added",
+          "tag": "New Lead"
+        },
+        "actions": [
+          { "type": "send_sms", "message": "{{custom_values.welcome_sms}}" },
+          { "type": "wait", "duration": "10m" },
+          { "type": "send_email", "subject": "Welcome to {{custom_values.company_name}}!", "template": "welcome_email" },
+          { "type": "add_tag", "tag": "Contacted" },
+          { "type": "create_task", "title": "Follow up with {{contact.first_name}}", "due": "+1d" }
+        ]
+      },
+      {
+        "id": "appointment_reminder",
+        "name": "Appointment Reminder",
+        "trigger": {
+          "type": "appointment_scheduled"
+        },
+        "actions": [
+          { "type": "add_tag", "tag": "Appointment Set" },
+          { "type": "wait", "until": "appointment_time - 24h" },
+          { "type": "send_sms", "message": "Hi {{contact.first_name}}, friendly reminder about your appointment tomorrow at {{appointment.time}}. See you then!" },
+          { "type": "wait", "until": "appointment_time - 1h" },
+          { "type": "send_sms", "message": "Your appointment is in 1 hour! Here's the meeting link: {{appointment.link}}" }
+        ]
+      },
+      {
+        "id": "no_show_followup",
+        "name": "No Show - Rebook",
+        "trigger": {
+          "type": "tag_added",
+          "tag": "No Show"
+        },
+        "actions": [
+          { "type": "remove_tag", "tag": "Appointment Set" },
+          { "type": "wait", "duration": "2h" },
+          { "type": "send_sms", "message": "Hey {{contact.first_name}}, we missed you! No worries - life happens. Want to reschedule? {{custom_values.calendar_link}}" },
+          { "type": "wait", "duration": "2d" },
+          { "type": "send_email", "subject": "Still interested?", "template": "no_show_followup" }
+        ]
+      }
+    ],
+    "templates": {
+      "emails": [
+        {
+          "id": "welcome_email",
+          "name": "Welcome Email",
+          "subject": "Welcome to {{custom_values.company_name}}!",
+          "body": "Hi {{contact.first_name}},\n\nThanks for reaching out! We're excited to help you.\n\nBook a call: {{custom_values.calendar_link}}\n\nBest,\nThe {{custom_values.company_name}} Team"
+        },
+        {
+          "id": "no_show_followup",
+          "name": "No Show Follow Up",
+          "subject": "We missed you!",
+          "body": "Hi {{contact.first_name}},\n\nWe noticed you couldn't make our scheduled call. No problem at all!\n\nWhenever you're ready, just pick a new time: {{custom_values.calendar_link}}\n\nBest,\nThe {{custom_values.company_name}} Team"
+        }
+      ],
+      "sms": []
+    }
+  },
+  "deployment": {
+    "strategy": "merge",
+    "dry_run": false,
+    "rollback_on_error": true
+  }
+}

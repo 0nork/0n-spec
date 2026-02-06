@@ -1,0 +1,143 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://0nork.com/schemas/snapshot.json",
+  "title": ".0n Snapshot",
+  "description": "System state snapshot for the .0n standard",
+  "type": "object",
+  "required": ["$0n", "components"],
+  "properties": {
+    "$0n": {
+      "type": "object",
+      "required": ["type", "version"],
+      "properties": {
+        "type": {
+          "const": "snapshot"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$"
+        },
+        "created": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 500
+        }
+      }
+    },
+    "target": {
+      "type": "object",
+      "properties": {
+        "service": { "type": "string" },
+        "location_id": { "type": "string" },
+        "environment": {
+          "type": "string",
+          "enum": ["production", "sandbox", "development"]
+        }
+      }
+    },
+    "components": {
+      "type": "object",
+      "properties": {
+        "pipelines": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "stages"],
+            "properties": {
+              "name": { "type": "string" },
+              "stages": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["name"],
+                  "properties": {
+                    "name": { "type": "string" },
+                    "position": { "type": "integer" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": { "type": "string" },
+              "color": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" }
+            }
+          }
+        },
+        "custom_fields": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["key", "name", "type"],
+            "properties": {
+              "key": { "type": "string" },
+              "name": { "type": "string" },
+              "type": { "type": "string", "enum": ["text", "dropdown", "number", "date", "checkbox"] },
+              "options": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
+        "custom_values": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "workflows": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "trigger", "actions"],
+            "properties": {
+              "id": { "type": "string" },
+              "name": { "type": "string" },
+              "trigger": { "type": "object" },
+              "actions": { "type": "array" }
+            }
+          }
+        },
+        "templates": {
+          "type": "object",
+          "properties": {
+            "emails": { "type": "array" },
+            "sms": { "type": "array" }
+          }
+        }
+      }
+    },
+    "deployment": {
+      "type": "object",
+      "properties": {
+        "strategy": {
+          "type": "string",
+          "enum": ["merge", "replace", "skip_existing"],
+          "default": "merge"
+        },
+        "dry_run": {
+          "type": "boolean",
+          "default": false
+        },
+        "rollback_on_error": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    }
+  }
+}

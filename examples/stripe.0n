@@ -1,0 +1,24 @@
+{
+  "$0n": {
+    "type": "connection",
+    "version": "1.0.0",
+    "created": "2026-02-06T12:00:00Z",
+    "name": "Production Stripe"
+  },
+  "service": "stripe",
+  "environment": "production",
+  "auth": {
+    "type": "api_key",
+    "credentials": {
+      "api_key": "{{env.STRIPE_SECRET_KEY}}"
+    }
+  },
+  "options": {
+    "timeout_ms": 30000,
+    "retry_count": 3
+  },
+  "metadata": {
+    "account_name": "My Business",
+    "connected_at": "2026-02-06T12:00:00Z"
+  }
+}
