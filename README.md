@@ -191,7 +191,7 @@ The `.0n` standard uses double-brace templates:
 
 | Product | Description | Status |
 |---------|-------------|--------|
-| [0nMCP](https://github.com/0nork/0nMCP) | Universal AI API Orchestrator | Production |
+| [0nMCP](https://github.com/0nork/0nMCP) | Universal AI API Orchestrator — 535 tools, 26 services | Production |
 
 ### Building a .0n Implementation
 
@@ -199,6 +199,19 @@ The `.0n` standard uses double-brace templates:
 2. Support the `$0n` header in all files
 3. Validate against the JSON schemas
 4. Pass conformance tests: `npx 0n-spec test`
+
+---
+
+## Community & Unlocks
+
+The .0n Standard grows with the 0nMCP community. Every milestone unlocks new capabilities.
+
+- **[0nmcp.com/community](https://0nmcp.com/community)** — Community hub
+- **[Unlock Schedule](https://0nmcp.com/sponsor)** — 7-phase roadmap from 535 to 5,000+ tools
+- [GitHub Discussions](https://github.com/0nork/0nMCP/discussions) — Questions and ideas
+- [Sponsor on GitHub](https://github.com/sponsors/0nork) — Fund the next unlock
+
+**Current:** Phase 0 — Foundation complete (535 tools, 26 services, 13 categories)
 
 ---
 
