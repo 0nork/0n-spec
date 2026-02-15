@@ -1,6 +1,6 @@
 {
   "name": "0n-spec",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "The .0n Standard - Universal configuration format for AI orchestration. Powers 0nMCP (535 tools, 26 services).",
   "main": "index.js",
   "bin": {
@@ -43,6 +43,7 @@
   },
   "files": [
     "index.js",
+    "resolve.js",
     "cli.js",
     "schemas",
     "examples",

@@ -9,6 +9,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { resolve, deepGet, evaluateExpression } = require('./resolve');
 
 const schemasDir = path.join(__dirname, 'schemas');
 
@@ -246,6 +247,9 @@ module.exports = {
   init,
   list,
   loadSchema,
+  resolve,
+  deepGet,
+  evaluateExpression,
   TYPES: ['connection', 'workflow', 'snapshot', 'config', 'execution'],
-  VERSION: '1.0.0',
+  VERSION: '1.1.0',
 };
